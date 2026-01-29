@@ -1,0 +1,150 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Register | TodoApp</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-card">
+    <h1>TodoApp</h1>
+    <p class="auth-subtitle">Create your account 🚀</p>
+
+    <form id="registerForm">
+        <div class="field">
+            <label>Full Name</label>
+            <input id="name" type="text" placeholder="John Doe" required>
+        </div>
+
+        <div class="field">
+            <label>Email</label>
+            <input id="email" type="email" placeholder="john@example.com" required>
+        </div>
+
+        <div class="field">
+            <label>Password</label>
+            <input id="password" type="password" placeholder="Min 6 characters" required>
+        </div>
+
+        <button type="submit">Create Account</button>
+    </form>
+
+    <p class="auth-footer">
+        Already have an account?
+        <a href="/login">Login</a>
+    </p>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        const res = await fetch("/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ name, email, password })
+        });
+
+        if (!res.ok) {
+            alert("User already exists");
+            return;
+        }
+
+        window.location.href = "/login";
+    });
+});
+</script>
+
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Register | TodoApp</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-card">
+    <h1>TodoApp</h1>
+    <p class="auth-subtitle">Create your account 🚀</p>
+
+    <form id="registerForm">
+        <div class="field">
+            <label>Full Name</label>
+            <input id="name" required>
+        </div>
+
+        <div class="field">
+            <label>Email</label>
+            <input id="email" type="email" required>
+        </div>
+
+        <div class="field">
+            <label>Password</label>
+            <input id="password" type="password" required>
+        </div>
+
+        <button type="submit">Create Account</button>
+    </form>
+
+    <p class="auth-footer">
+        Already have an account?
+        <a href="/login">Login</a>
+    </p>
+</div>
+
+<script>
+// document.getElementById("registerForm").addEventListener("submit", async (e) => {
+//     e.preventDefault();
+
+//     const res = await fetch("/register", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//             name: name.value.trim(),
+//             email: email.value.trim(),
+//             password: password.value.trim()
+//         })
+//     });
+
+//     if (!res.ok) {
+//         alert("User already exists");
+//         return;
+//     }
+
+//     window.location.href = "/login";
+// });
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("registerForm");
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const res = await fetch("/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: document.getElementById("name").value.trim(),
+                email: document.getElementById("email").value.trim(),
+                password: document.getElementById("password").value.trim()
+            })
+        });
+
+        if (!res.ok) {
+            alert("User already exists");
+            return;
+        }
+
+        window.location.href = "/login";
+    });
+});
+</script>
+
+</body>
+</html>
