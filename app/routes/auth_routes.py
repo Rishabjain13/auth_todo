@@ -43,7 +43,7 @@ def register_page():
 def register(data: RegisterRequest, db: Session = Depends(get_db)):
     user = register_user(db, data.name, data.email, data.password)
     if not user:
-        raise HTTPException(status_code=400, detail="User already exists")
+        raise HTTPException(status_code=400, detail="Registration failed")
     return {"success": True}
 
 
