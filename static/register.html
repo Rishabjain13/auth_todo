@@ -36,44 +36,23 @@
 </div>
 
 <script>
-// document.getElementById("registerForm").addEventListener("submit", async (e) => {
-//     e.preventDefault();
-
-//     const res = await fetch("/register", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({
-//             name: name.value.trim(),
-//             email: email.value.trim(),
-//             password: password.value.trim()
-//         })
-//     });
-
-//     if (!res.ok) {
-//         alert("User already exists");
-//         return;
-//     }
-
-//     window.location.href = "/login";
-// });
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("registerForm");
-
-    form.addEventListener("submit", async (e) => {
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
         e.preventDefault();
+
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
 
         const res = await fetch("/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                name: document.getElementById("name").value.trim(),
-                email: document.getElementById("email").value.trim(),
-                password: document.getElementById("password").value.trim()
-            })
+            body: JSON.stringify({ name, email, password })
         });
 
         if (!res.ok) {
-            alert("User already exists");
+            const err = await res.json();
+            alert(err.detail || "Registration failed");
             return;
         }
 
@@ -82,6 +61,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+
 </body>
 </html>
-
