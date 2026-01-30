@@ -23,6 +23,7 @@ def get_current_user(authorization: str = Header(None)):
         )
 
     payload = decode_token(token)
+    role = payload["role"]
     if not payload:
         raise HTTPException(
             status_code=401,
