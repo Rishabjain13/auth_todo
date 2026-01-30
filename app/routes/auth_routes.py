@@ -60,8 +60,8 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    access_token = create_access_token(user.id)
-    refresh_token = create_refresh_token(user.id)
+    access_token = create_access_token(user.id,user.role)
+    refresh_token = create_refresh_token(user.id,user.role)
 
     response = JSONResponse(
         {
@@ -91,6 +91,7 @@ def refresh(refresh_token: str = Cookie(None)):
         raise HTTPException(status_code=401, detail="Invalid refresh token")
 
     user_id = int(payload["sub"])
+    role = payload["role"]
 
     new_access = create_access_token(user_id)
     new_refresh = create_refresh_token(user_id)
