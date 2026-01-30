@@ -10,6 +10,10 @@ from pathlib import Path
 from app.database import Base, engine
 from app.routes.auth_routes import router as auth_router
 from app.routes.todo_routes import router as todo_router
+from app.routes.admin_routes import router as admin_router
+
+
+
 
 
 Base.metadata.create_all(bind=engine)
@@ -35,3 +39,4 @@ def register_page():
 
 app.include_router(auth_router)
 app.include_router(todo_router)
+app.include_router(admin_router)
