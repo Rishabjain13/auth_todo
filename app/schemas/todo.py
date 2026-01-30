@@ -1,12 +1,13 @@
 from pydantic import BaseModel
+from typing import Literal
 
 class TodoCreate(BaseModel):
     title: str
-    priority: str
+    priority: Literal["High", "Medium", "Low"]
 
 class TodoUpdate(BaseModel):
     title: str
-    priority: str
+    priority: Literal["High", "Medium", "Low"]
     completed: bool
 
 class TodoResponse(BaseModel):
