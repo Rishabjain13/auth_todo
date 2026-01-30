@@ -1,224 +1,14 @@
-# from fastapi import APIRouter, Form, Depends, HTTPException
-# from fastapi.responses import FileResponse
-# from sqlalchemy.orm import Session
-
-# from app.database import SessionLocal
-# from app.controllers.auth_controller import register_user, authenticate_user
-# from app.core.security import create_access_token
-# from app.models.user import User
-# from app.deps import get_current_user
-
-# router = APIRouter()
-
-# def get_db():
-#     db = SessionLocal()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
-
-# @router.get("/")
-# def index_page():
-#     return FileResponse("static/index.html")
-
-# @router.get("/login")
-# def login_page():
-#     return FileResponse("static/login.html")
-
-# @router.get("/register")
-# def register_page():
-#     return FileResponse("static/register.html")
-
-# @router.post("/register")
-# def register(
-#     name: str = Form(...),
-#     email: str = Form(...),
-#     password: str = Form(...),
-#     db: Session = Depends(get_db)
-# ):
-#     user = register_user(db, name, email, password)
-#     if not user:
-#         raise HTTPException(status_code=400)
-#     return {"success": True}
-
-# @router.post("/login")
-# def login(
-#     email: str = Form(...),
-#     password: str = Form(...),
-#     db: Session = Depends(get_db)
-# ):
-#     user = authenticate_user(db, email, password)
-#     if not user:
-#         raise HTTPException(status_code=401)
-
-#     token = create_access_token(user.id)
-#     return {"access_token": token}
-
-# @router.post("/logout")
-# def logout():
-#     return {"success": True}
-
-# @router.get("/me")
-# def me(
-#     user_id: int = Depends(get_current_user),
-#     db: Session = Depends(get_db)
-# ):
-#     user = db.query(User).filter(User.id == user_id).first()
-#     if not user:
-#         raise HTTPException(status_code=404)
-#     return {"name": user.name, "email": user.email}
-
-# from fastapi import APIRouter, Depends, HTTPException
-# from fastapi.responses import FileResponse
-# from sqlalchemy.orm import Session
-
-# from app.database import SessionLocal
-# from app.controllers.auth_controller import register_user, authenticate_user
-# from app.core.security import create_access_token
-# from app.models.user import User
-# from app.deps import get_current_user
-
-# router = APIRouter()
-
-# def get_db():
-#     db = SessionLocal()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
-
-# @router.get("/")
-# def index_page():
-#     return FileResponse("static/index.html")
-
-# @router.get("/login")
-# def login_page():
-#     return FileResponse("static/login.html")
-
-# @router.get("/register")
-# def register_page():
-#     return FileResponse("static/register.html")
-
-# @router.post("/register")
-# def register(data: dict, db: Session = Depends(get_db)):
-#     user = register_user(
-#         db,
-#         data.get("name"),
-#         data.get("email"),
-#         data.get("password")
-#     )
-#     if not user:
-#         raise HTTPException(400)
-#     return {"success": True}
-
-# @router.post("/login")
-# def login(data: dict, db: Session = Depends(get_db)):
-#     user = authenticate_user(
-#         db,
-#         data.get("email"),
-#         data.get("password")
-#     )
-#     if not user:
-#         raise HTTPException(401)
-
-#     return {"access_token": create_access_token(user.id)}
-
-# @router.post("/logout")
-# def logout():
-#     return {"success": True}
-
-# @router.get("/me")
-# def me(user_id: int = Depends(get_current_user), db: Session = Depends(get_db)):
-#     user = db.query(User).filter(User.id == user_id).first()
-#     if not user:
-#         raise HTTPException(404)
-#     return {"name": user.name, "email": user.email}
-
-# from fastapi import APIRouter, Depends, HTTPException
-# from fastapi.responses import FileResponse
-# from sqlalchemy.orm import Session
-
-# from app.database import SessionLocal
-# from app.controllers.auth_controller import register_user, authenticate_user
-# from app.core.security import create_access_token
-# from app.models.user import User
-# from app.deps import get_current_user
-# from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse
-
-# router = APIRouter(tags=["Auth"])
-
-
-# def get_db():
-#     db = SessionLocal()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
-
-
-# @router.get("/")
-# def index_page():
-#     return FileResponse("static/index.html")
-
-
-# @router.get("/login")
-# def login_page():
-#     return FileResponse("static/login.html")
-
-
-# @router.get("/register")
-# def register_page():
-#     return FileResponse("static/register.html")
-
-
-# @router.post("/register")
-# def register(
-#     data: RegisterRequest,
-#     db: Session = Depends(get_db)
-# ):
-#     user = register_user(db, data.name, data.email, data.password)
-#     if not user:
-#         raise HTTPException(status_code=400, detail="User already exists")
-#     return {"success": True}
-
-
-# @router.post("/login", response_model=TokenResponse)
-# def login(
-#     data: LoginRequest,
-#     db: Session = Depends(get_db)
-# ):
-#     user = authenticate_user(db, data.email, data.password)
-#     if not user:
-#         raise HTTPException(status_code=401, detail="Invalid credentials")
-
-#     return {
-#         "access_token": create_access_token(user.id),
-#         "token_type": "bearer"
-#     }
-
-
-# @router.post("/logout")
-# def logout():
-#     return {"success": True}
-
-
-# @router.get("/me")
-# def me(
-#     user_id: int = Depends(get_current_user),
-#     db: Session = Depends(get_db)
-# ):
-#     user = db.query(User).filter(User.id == user_id).first()
-#     if not user:
-#         raise HTTPException(status_code=404)
-#     return {"name": user.name, "email": user.email}
-
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, Depends, HTTPException, Cookie
+from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
 from app.controllers.auth_controller import register_user, authenticate_user
-from app.core.security import create_access_token
+from app.core.security import (
+    create_access_token,
+    create_refresh_token,
+    decode_token,
+)
 from app.models.user import User
 from app.deps import get_current_user
 from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse
@@ -263,21 +53,72 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    return {
-        "access_token": create_access_token(user.id),
-        "token_type": "bearer"
-    }
+    access_token = create_access_token(user.id)
+    refresh_token = create_refresh_token(user.id)
+
+    response = JSONResponse(
+        {
+            "access_token": access_token,
+            "token_type": "bearer",
+        }
+    )
+
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=True,
+        samesite="strict",
+    )
+
+    return response
+
+
+@router.post("/refresh")
+def refresh(refresh_token: str = Cookie(None)):
+    if not refresh_token:
+        raise HTTPException(status_code=401, detail="Refresh token missing")
+
+    payload = decode_token(refresh_token)
+    if not payload or payload.get("type") != "refresh":
+        raise HTTPException(status_code=401, detail="Invalid refresh token")
+
+    user_id = int(payload["sub"])
+
+    new_access = create_access_token(user_id)
+    new_refresh = create_refresh_token(user_id)
+
+    response = JSONResponse(
+        {
+            "access_token": new_access,
+            "token_type": "bearer",
+        }
+    )
+
+    response.set_cookie(
+        key="refresh_token",
+        value=new_refresh,
+        httponly=True,
+        secure=True,
+        samesite="strict",
+    )
+
+    return response
 
 
 @router.post("/logout")
 def logout():
-    return {"success": True}
+    res = JSONResponse({"success": True})
+    res.delete_cookie("refresh_token")
+    return res
 
 
 @router.get("/me")
-def me(user_id: int = Depends(get_current_user), db: Session = Depends(get_db)):
+def me(
+    user_id: int = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404)
-
     return {"name": user.name, "email": user.email}
