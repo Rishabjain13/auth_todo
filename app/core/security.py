@@ -12,9 +12,10 @@ if not SECRET_KEY:
     raise RuntimeError("SECRET_KEY is not set in environment variables")
 
 
-def create_access_token(user_id: int):
+def create_access_token(user_id: int, role: str):
     payload = {
         "sub": str(user_id),
+        "role": role,
         "type": "access",
         "exp": datetime.now(timezone.utc)
         + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
@@ -22,9 +23,10 @@ def create_access_token(user_id: int):
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def create_refresh_token(user_id: int):
+def create_refresh_token(user_id: int, role: str):
     payload = {
         "sub": str(user_id),
+        "role": role,
         "type": "refresh",
         "exp": datetime.now(timezone.utc)
         + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
