@@ -38,12 +38,19 @@ def login_page():
 def register_page():
     return FileResponse("static/register.html")
 
-
 @router.post("/register")
-def register(data: RegisterRequest, db: Session = Depends(get_db)):
-    user = register_user(db, data.name, data.email, data.password)
+def register(
+    data: RegisterRequest,
+    db: Session = Depends(get_db)
+):
+    try:
+        user = register_user(db, data.name, data.email, data.password)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     if not user:
         raise HTTPException(status_code=400, detail="Registration failed")
+
     return {"success": True}
 
 
