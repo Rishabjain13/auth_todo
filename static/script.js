@@ -21,6 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const pendingCountEl = document.getElementById("pendingCount");
     const overdueCountEl = document.getElementById("overdueCount");
 
+    let currentShareTaskId = null;
+
     async function apiFetch(url, options = {}) {
         options.headers = {
             ...(options.headers || {}),
@@ -49,6 +51,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const user = await res.json();
         document.getElementById("username").textContent = user.name;
         document.getElementById("useremail").textContent = user.email;
+
+        sessionStorage.setItem("role", user.role);
+
+        if (user.role === "admin") {
+            document.getElementById("adminBtn")?.classList.remove("hidden");
+        }
     }
 
     async function loadTasks() {
@@ -63,54 +71,85 @@ document.addEventListener("DOMContentLoaded", () => {
         let done = 0;
         let pending = 0;
 
+
         tasks.forEach(task => {
             const div = document.createElement("div");
             div.className = "task";
 
+            const isOwner = task.permission === "owner";
+            const isEditor = task.permission === "editor";
+            const isViewer = task.permission === "viewer";
+
             div.innerHTML = `
-                <input type="checkbox" ${task.completed ? "checked" : ""}>
-                <span class="title">${task.completed ? `<s>${task.title}</s>` : task.title}</span>
+                <input type="checkbox"
+                    ${task.completed ? "checked" : ""}
+                    ${isViewer ? "disabled" : ""}>
+
+                <span class="title">
+                    ${task.completed ? `<s>${task.title}</s>` : task.title}
+                </span>
+
                 <span class="${task.priority.toLowerCase()}">${task.priority}</span>
-                <button class="edit">✏️</button>
-                <button class="delete">🗑</button>
+
+                <span class="perm ${task.permission}">
+                    ${task.permission.toUpperCase()}
+                </span>
+
+                ${isOwner ? `<button class="share">➤</button>` : ``}
+                ${(isOwner || isEditor) ? `<button class="edit">✏️</button>` : ``}
+                ${isOwner ? `<button class="delete">🗑</button>` : ``}
             `;
 
-            div.querySelector("input").addEventListener("change", async () => {
-                await apiFetch(`/tasks/${task.id}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        title: task.title,
-                        priority: task.priority,
-                        completed: !task.completed
-                    })
+            if (!isViewer) {
+                div.querySelector("input").addEventListener("change", async () => {
+                    await apiFetch(`/tasks/${task.id}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            title: task.title,
+                            priority: task.priority,
+                            completed: !task.completed
+                        })
+                    });
+                    loadTasks();
                 });
-                loadTasks();
-            });
+            }
 
-            div.querySelector(".edit").addEventListener("click", async () => {
-                const newTitle = prompt("Edit task title", task.title);
-                if (!newTitle) return;
+            if (isOwner || isEditor) {
+                div.querySelector(".edit")?.addEventListener("click", async () => {
+                    const newTitle = prompt("Edit task title", task.title);
+                    if (!newTitle) return;
 
-                const newPriority = prompt("Edit priority (High / Medium / Low)", task.priority);
-                if (!["High", "Medium", "Low"].includes(newPriority)) return;
+                    const newPriority = prompt(
+                        "Edit priority (High / Medium / Low)",
+                        task.priority
+                    );
+                    if (!["High", "Medium", "Low"].includes(newPriority)) return;
 
-                await apiFetch(`/tasks/${task.id}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        title: newTitle,
-                        priority: newPriority,
-                        completed: task.completed
-                    })
+                    await apiFetch(`/tasks/${task.id}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            title: newTitle,
+                            priority: newPriority,
+                            completed: task.completed
+                        })
+                    });
+                    loadTasks();
                 });
-                loadTasks();
-            });
+            }
 
-            div.querySelector(".delete").addEventListener("click", async () => {
-                await apiFetch(`/tasks/${task.id}`, { method: "DELETE" });
-                loadTasks();
-            });
+            if (isOwner) {
+                div.querySelector(".delete")?.addEventListener("click", async () => {
+                    await apiFetch(`/tasks/${task.id}`, { method: "DELETE" });
+                    loadTasks();
+                });
+
+                div.querySelector(".share")?.addEventListener("click", () => {
+                    currentShareTaskId = task.id;
+                    document.getElementById("shareModal").classList.remove("hidden");
+                });
+            }
 
             if (task.completed) {
                 done++;
@@ -120,6 +159,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 todayTasksBox.appendChild(div);
             }
         });
+
+       
 
         doneCountEl.textContent = done;
         pendingCountEl.textContent = pending;
@@ -143,6 +184,25 @@ document.addEventListener("DOMContentLoaded", () => {
         taskInput.value = "";
         loadTasks();
     }
+
+    window.shareTask = async function () {
+        const email = document.getElementById("shareEmail").value.trim();
+        const permission = document.getElementById("sharePermission").value;
+
+        if (!email) return alert("Email required");
+
+        await apiFetch(`/tasks/${currentShareTaskId}/share?user_email=${email}&permission=${permission}`, {
+            method: "POST"
+        });
+
+        document.getElementById("shareModal").classList.add("hidden");
+        document.getElementById("shareEmail").value = "";
+        alert("Task shared successfully");
+    };
+
+    window.closeShareModal = function () {
+        document.getElementById("shareModal").classList.add("hidden");
+    };
 
     window.logout = function () {
         sessionStorage.removeItem("access_token");
