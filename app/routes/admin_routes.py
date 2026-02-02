@@ -50,6 +50,7 @@ def get_all_tasks(
         .join(Owner, Todo.user_id == Owner.id)
         .outerjoin(TodoShare, Todo.id == TodoShare.todo_id)
         .outerjoin(SharedUser, TodoShare.user_id == SharedUser.id)
+        .filter(Todo.is_deleted == False)
         .all()
     )
 
