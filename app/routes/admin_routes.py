@@ -7,6 +7,8 @@ from app.models.user import User
 from app.models.todo import Todo
 from app.models.todo_share import TodoShare
 from app.deps import require_admin
+from app.models.audit_log import AuditLog
+
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
@@ -95,6 +97,14 @@ def delete_task(
     if not task:
         raise HTTPException(404, "Task not found")
 
+    admin = db.query(User).filter(User.id == int(_["sub"])).first()
+
     task.is_deleted = True
+
+    db.add(AuditLog(
+        action=f"Deleted task {task.id}",
+        admin_email=admin.email
+    ))
+
     db.commit()
     return {"status": "deleted"}
