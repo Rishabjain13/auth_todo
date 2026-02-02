@@ -38,6 +38,11 @@ def login_page():
 def register_page():
     return FileResponse("static/register.html")
 
+@router.get("/admin", include_in_schema=False)
+def admin_page():
+    return FileResponse("static/admin.html")
+
+
 @router.post("/register")
 def register(
     data: RegisterRequest,
@@ -123,10 +128,11 @@ def logout():
 
 @router.get("/me")
 def me(
-    user_id: int = Depends(get_current_user),
+    payload: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    user_id = int(payload["sub"])
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404)
-    return {"name": user.name, "email": user.email}
+    return {"name": user.name, "email": user.email, "role": user.role}
