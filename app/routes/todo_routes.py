@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
 from app.models.todo import Todo
+from app.models.todo_share import TodoShare   
+from app.models.user import User              
 from app.deps import get_current_user
 from app.schemas.todo import TodoCreate, TodoUpdate, TodoResponse
 
@@ -16,21 +18,52 @@ def get_db():
     finally:
         db.close()
 
-
-@router.get("", response_model=list[TodoResponse])
+@router.get("")
 def get_tasks(
-    user_id: int = Depends(get_current_user),
+    payload: dict = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    return db.query(Todo).filter(Todo.user_id == user_id).all()
+    user_id = int(payload["sub"])
+
+    response = []
+
+    owned = db.query(Todo).filter(Todo.user_id == user_id).all()
+    for t in owned:
+        response.append({
+            "id": t.id,
+            "title": t.title,
+            "priority": t.priority,
+            "completed": t.completed,
+            "permission": "owner"
+        })
+
+    shared = (
+        db.query(Todo, TodoShare.permission)
+        .join(TodoShare, Todo.id == TodoShare.todo_id)
+        .filter(TodoShare.user_id == user_id)
+        .all()
+    )
+
+    for t, perm in shared:
+        response.append({
+            "id": t.id,
+            "title": t.title,
+            "priority": t.priority,
+            "completed": t.completed,
+            "permission": perm
+        })
+
+    return response
 
 
 @router.post("", response_model=TodoResponse)
 def create_task(
     data: TodoCreate,
-    user_id: int = Depends(get_current_user),
+    payload: dict = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    user_id = int(payload["sub"])
+
     todo = Todo(
         title=data.title,
         priority=data.priority,
@@ -47,16 +80,24 @@ def create_task(
 def update_task(
     task_id: int,
     data: TodoUpdate,
-    user_id: int = Depends(get_current_user),
+    payload: dict = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    todo = db.query(Todo).filter(
-        Todo.id == task_id,
-        Todo.user_id == user_id
-    ).first()
+    user_id = int(payload["sub"])
 
+    todo = db.query(Todo).filter(Todo.id == task_id).first()
     if not todo:
         raise HTTPException(status_code=404, detail="Task not found")
+
+    if todo.user_id != user_id:
+        share = db.query(TodoShare).filter(
+            TodoShare.todo_id == task_id,
+            TodoShare.user_id == user_id,
+            TodoShare.permission == "editor"
+        ).first()
+
+        if not share:
+            raise HTTPException(status_code=403, detail="Edit not allowed")
 
     todo.title = data.title
     todo.priority = data.priority
@@ -69,17 +110,67 @@ def update_task(
 @router.delete("/{task_id}")
 def delete_task(
     task_id: int,
-    user_id: int = Depends(get_current_user),
+    payload: dict = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    user_id = int(payload["sub"])
+
     todo = db.query(Todo).filter(
         Todo.id == task_id,
         Todo.user_id == user_id
     ).first()
 
     if not todo:
-        raise HTTPException(status_code=404, detail="Task not found")
+        raise HTTPException(status_code=403, detail="Only owner can delete")
 
     db.delete(todo)
     db.commit()
     return {"status": "deleted"}
+
+
+@router.post("/{task_id}/share")
+def share_task(
+    task_id: int,
+    user_email: str,
+    permission: str,  
+    payload: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    user_id = int(payload["sub"])
+
+    if permission not in ("viewer", "editor"):
+        raise HTTPException(status_code=400, detail="Invalid permission")
+
+    todo = db.query(Todo).filter(Todo.id == task_id).first()
+    if not todo:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    if todo.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Only owner can share")
+
+    user = db.query(User).filter(User.email == user_email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    exists = db.query(TodoShare).filter(
+        TodoShare.todo_id == task_id,
+        TodoShare.user_id == user.id
+    ).first()
+
+    if exists:
+        raise HTTPException(status_code=400, detail="Already shared")
+
+    share = TodoShare(
+        todo_id=task_id,
+        user_id=user.id,
+        permission=permission
+    )
+
+    db.add(share)
+    db.commit()
+
+    return {
+        "status": "shared",
+        "email": user.email,
+        "permission": permission
+    }
