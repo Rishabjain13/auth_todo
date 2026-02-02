@@ -66,7 +66,7 @@ async function loadAdminTasks() {
 
     adminTitle.textContent = "All Tasks";
 
-    if (!tasks || tasks.length === 0) {
+    if (!tasks.length) {
         adminData.innerHTML = "<p>No tasks found</p>";
         return;
     }
@@ -100,7 +100,7 @@ async function loadAdminTasks() {
 
 
 async function deleteTask(taskId) {
-    if (!confirm("Delete this task permanently?")) return;
+    if (!confirm("Are you sure you want to delete this task?")) return;
 
     await apiFetch(`/admin/tasks/${taskId}`, { method: "DELETE" });
     loadAdminTasks();
