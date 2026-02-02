@@ -20,10 +20,18 @@ def get_db():
 
 @router.get("/users")
 def get_all_users(
+    page: int = 1,
+    limit: int = 10,
     _: dict = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    return db.query(User).all()
+    offset = (page - 1) * limit
+    return (
+        db.query(User)
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
 
 
 @router.get("/tasks")
@@ -87,6 +95,6 @@ def delete_task(
     if not task:
         raise HTTPException(404, "Task not found")
 
-    db.delete(task)
+    task.is_deleted = True
     db.commit()
     return {"status": "deleted"}
