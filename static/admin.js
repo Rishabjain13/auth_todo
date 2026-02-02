@@ -66,7 +66,7 @@ async function loadAdminTasks() {
 
     adminTitle.textContent = "All Tasks";
 
-    if (!tasks.length) {
+    if (!tasks || tasks.length === 0) {
         adminData.innerHTML = "<p>No tasks found</p>";
         return;
     }
