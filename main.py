@@ -1,6 +1,3 @@
-from dotenv import load_dotenv
-load_dotenv()
-
 from fastapi import FastAPI
 from fastapi.security import HTTPBearer
 from fastapi.responses import HTMLResponse
@@ -36,3 +33,4 @@ def register_page():
 app.include_router(auth_router)
 app.include_router(todo_router)
 app.include_router(admin_router)
+
