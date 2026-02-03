@@ -27,7 +27,14 @@ def get_tasks(
 
     response = []
 
-    owned = db.query(Todo).filter(Todo.user_id == user_id).all()
+    owned = (
+        db.query(Todo)
+        .filter(
+            Todo.user_id == user_id,
+            Todo.is_deleted == False
+        )
+        .all()
+    )
     for t in owned:
         response.append({
             "id": t.id,
@@ -40,7 +47,8 @@ def get_tasks(
     shared = (
         db.query(Todo, TodoShare.permission)
         .join(TodoShare, Todo.id == TodoShare.todo_id)
-        .filter(TodoShare.user_id == user_id)
+        .filter( TodoShare.user_id == user_id,
+            Todo.is_deleted == False)
         .all()
     )
 
@@ -68,7 +76,8 @@ def create_task(
         title=data.title,
         priority=data.priority,
         completed=False,
-        user_id=user_id
+        user_id=user_id,
+        is_deleted=False
     )
     db.add(todo)
     db.commit()
@@ -85,7 +94,15 @@ def update_task(
 ):
     user_id = int(payload["sub"])
 
-    todo = db.query(Todo).filter(Todo.id == task_id).first()
+    todo = (
+        db.query(Todo)
+        .filter(
+            Todo.id == task_id,
+            Todo.is_deleted == False
+        )
+        .first()
+    )
+
     if not todo:
         raise HTTPException(status_code=404, detail="Task not found")
 
@@ -117,13 +134,14 @@ def delete_task(
 
     todo = db.query(Todo).filter(
         Todo.id == task_id,
-        Todo.user_id == user_id
+        Todo.user_id == user_id,
+        Todo.is_deleted == False
     ).first()
 
     if not todo:
         raise HTTPException(status_code=403, detail="Only owner can delete")
 
-    db.delete(todo)
+    todo.is_deleted = True
     db.commit()
     return {"status": "deleted"}
 
@@ -141,7 +159,14 @@ def share_task(
     if permission not in ("viewer", "editor"):
         raise HTTPException(status_code=400, detail="Invalid permission")
 
-    todo = db.query(Todo).filter(Todo.id == task_id).first()
+    todo = (
+        db.query(Todo)
+        .filter(
+            Todo.id == task_id,
+            Todo.is_deleted == False
+        )
+        .first()
+    )
     if not todo:
         raise HTTPException(status_code=404, detail="Task not found")
 
