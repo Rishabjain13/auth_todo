@@ -94,7 +94,11 @@ def delete_task(
     _: dict = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    task = db.query(Todo).filter(Todo.id == task_id).first()
+    task = db.query(Todo).filter(
+        Todo.id == task_id,
+        Todo.is_deleted == False
+    ).first()
+
     if not task:
         raise HTTPException(404, "Task not found")
 
