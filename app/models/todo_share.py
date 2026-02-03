@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint
-from app.database import Base
+from app.database.base import Base
 
 class TodoShare(Base):
     __tablename__ = "todo_shares"
@@ -13,3 +13,4 @@ class TodoShare(Base):
     __table_args__ = (
         UniqueConstraint("todo_id", "user_id"),
     )
+
