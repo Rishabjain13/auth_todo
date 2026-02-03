@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.database import SessionLocal
+from app.database.session import get_db
 from app.models.todo import Todo
 from app.models.todo_share import TodoShare   
 from app.models.user import User              
@@ -10,13 +10,6 @@ from app.schemas.todo import TodoCreate, TodoUpdate, TodoResponse
 
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.get("")
 def get_tasks(
