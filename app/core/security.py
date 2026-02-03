@@ -22,6 +22,9 @@ if not SECRET_KEY:
 
 
 def create_access_token(user_id: int, role: str):
+    """
+    Create a JWT access token with user id and role.
+    """
     payload = {
         "sub": str(user_id),
         "role": role,
@@ -33,6 +36,9 @@ def create_access_token(user_id: int, role: str):
 
 
 def create_refresh_token(user_id: int, role: str):
+    """
+    Create a JWT refresh token with user id and role.
+    """
     payload = {
         "sub": str(user_id),
         "role": role,
@@ -44,6 +50,10 @@ def create_refresh_token(user_id: int, role: str):
 
 
 def decode_token(token: str):
+    """
+    Decode and validate a JWT token.
+    Returns payload if valid, otherwise None.
+    """
     try:
         return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     except JWTError:
