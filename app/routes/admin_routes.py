@@ -20,6 +20,12 @@ def get_all_users(
     _: dict = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
+    """
+    Admin endpoint to fetch all users.
+
+    Supports pagination.
+    Admin access only.
+    """
     offset = (page - 1) * limit
     return (
         db.query(User)
@@ -35,6 +41,16 @@ def get_all_tasks(
     _: dict = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
+    """
+    Admin endpoint to fetch all tasks.
+
+    Includes:
+    - Owner email
+    - Shared users and permissions
+
+    Supports search by owner/shared user email.
+    Deleted tasks are excluded.
+    """
     Owner = aliased(User)
     SharedUser = aliased(User)
 
@@ -87,6 +103,11 @@ def delete_task(
     _: dict = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
+    """
+    Admin soft delete for tasks.
+
+    Marks task as deleted and records audit log.
+    """
     task = db.query(Todo).filter(
         Todo.id == task_id,
         Todo.is_deleted == False
