@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session, aliased
 from sqlalchemy import or_
 
-from app.database import SessionLocal
+from app.database.session import get_db
 from app.models.user import User
 from app.models.todo import Todo
 from app.models.todo_share import TodoShare
@@ -11,13 +11,6 @@ from app.models.audit_log import AuditLog
 
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.get("/users")
