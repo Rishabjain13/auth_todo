@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, Cookie
 from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.orm import Session
 
-from app.database import SessionLocal
+from app.database.session import get_db
+
 from app.controllers.auth_controller import register_user, authenticate_user
 from app.core.security import (
     create_access_token,
@@ -14,14 +15,6 @@ from app.deps import get_current_user
 from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse
 
 router = APIRouter(tags=["Auth"])
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.get("/", include_in_schema=False)
@@ -98,8 +91,8 @@ def refresh(refresh_token: str = Cookie(None)):
     user_id = int(payload["sub"])
     role = payload["role"]
 
-    new_access = create_access_token(user_id)
-    new_refresh = create_refresh_token(user_id)
+    new_access = create_access_token(user_id, role)
+    new_refresh = create_refresh_token(user_id, role)
 
     response = JSONResponse(
         {
