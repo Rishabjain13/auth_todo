@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
-from app.database import Base
+from app.database.base import Base
 
 class Todo(Base):
     __tablename__ = "todos"
@@ -11,3 +11,4 @@ class Todo(Base):
     user_id = Column(Integer, ForeignKey("users.id"), index=True)
 
     is_deleted = Column(Boolean, default=False)
+
