@@ -54,6 +54,9 @@ def register(
 
 @router.post("/login", response_model=TokenResponse)
 def login(data: LoginRequest, db: Session = Depends(get_db)):
+    """
+    Authenticate user and return access & refresh tokens.
+    """
     user = authenticate_user(db, data.email, data.password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -81,6 +84,9 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
 
 @router.post("/refresh")
 def refresh(refresh_token: str = Cookie(None)):
+    """
+    Generate a new access token using a valid refresh token.
+    """
     if not refresh_token:
         raise HTTPException(status_code=401, detail="Refresh token missing")
 
@@ -124,6 +130,9 @@ def me(
     payload: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    """
+    Return current authenticated user's profile information.
+    """
     user_id = int(payload["sub"])
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
