@@ -16,6 +16,15 @@ def get_tasks(
     payload: dict = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """
+    Fetch all tasks visible to the current user.
+
+    Includes:
+    - Tasks owned by the user
+    - Tasks shared with the user (viewer/editor)
+
+    Deleted tasks are excluded.
+    """
     user_id = int(payload["sub"])
 
     response = []
@@ -63,6 +72,10 @@ def create_task(
     payload: dict = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """
+    Create a new task for the logged-in user.
+    The creator becomes the task owner.
+    """
     user_id = int(payload["sub"])
 
     todo = Todo(
@@ -85,6 +98,14 @@ def update_task(
     payload: dict = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """
+    Update an existing task.
+
+    Allowed:
+    - Owner can edit
+    - Editor can edit
+    Viewer cannot edit.
+    """
     user_id = int(payload["sub"])
 
     todo = (
@@ -123,6 +144,12 @@ def delete_task(
     payload: dict = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """
+    Soft delete a task.
+
+    Only the task owner can delete.
+    Task is marked as deleted, not removed from DB.
+    """
     user_id = int(payload["sub"])
 
     todo = db.query(Todo).filter(
@@ -147,6 +174,12 @@ def share_task(
     payload: dict = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """
+    Share a task with another user.
+
+    Only the owner can share.
+    Permissions allowed: viewer, editor.
+    """
     user_id = int(payload["sub"])
 
     if permission not in ("viewer", "editor"):
