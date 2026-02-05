@@ -8,10 +8,15 @@ from app.database import Base, engine
 from app.routes.auth_routes import router as auth_router
 from app.routes.todo_routes import router as todo_router
 from app.routes.admin_routes import router as admin_router
+from app.routes.health import router as health_router
+from app.routes.template_routes import router as template_router
+from app.routes.activity_ws import router as activity_ws_router
 
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="TodoApp")
+app = FastAPI(title="Auth Todo API",
+    description="Authentication-based Todo application with RBAC and sharing",
+    version="1.0.0")
 security = HTTPBearer()
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -32,5 +37,15 @@ def register_page():
 
 app.include_router(auth_router)
 app.include_router(todo_router)
+app.include_router(template_router)
 app.include_router(admin_router)
+app.include_router(health_router)
+app.include_router(activity_ws_router)
 
+
+# from app.database import SessionLocal
+# from app.models.user import User
+# db = SessionLocal()
+# admin = db.query(User).filter(User.email == "admin@email.com").first()
+# admin.role = "admin"
+# db.commit()

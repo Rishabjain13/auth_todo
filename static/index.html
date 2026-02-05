@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>ToDoApp</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div id="overdueToast" class="overdue-toast hidden">
+    ⚠️ You have <span id="overdueToastCount"></span> overdue tasks
+</div>
+
+
+<div class="app">
+
+    <aside class="sidebar">
+        <div class="user">
+            <img src="/static/user.avif" alt="User Image" class="image">
+            <h2 id="username">Loading...</h2>
+            <p id="useremail">Loading...</p>
+            <button id="adminBtn" class="admin-btn hidden" onclick="goAdmin()">
+                🛠 Admin Panel
+            </button>
+            <button class="logout" onclick="logout()">Logout</button>
+        </div>
+
+        <nav>
+            <a href="#">Dashboard</a>
+            <a href="#">My Tasks</a>
+            <a href="#">Calendar</a>
+            <a href="#">Completed</a>
+            <a href="#">Settings</a>
+        </nav>
+    </aside>
+
+    <main class="content">
+
+        <header class="top">
+            <div>
+                <h1>TodoApp</h1>
+                <p id="todayDate"></p>
+            </div>
+
+            <div class="header-actions">
+                <input id="taskInput" type="text" placeholder="Task title">
+                
+                <select id="prioritySelect">
+                    <option>High</option>
+                    <option selected>Medium</option>
+                    <option>Low</option>
+                </select>
+
+                <input type="date" id="dueDate" />
+                <select id="templateSelect" onchange="useTemplate()">
+                    <option value="">Use Template</option>
+                </select>
+
+                <button class="add" onclick="saveTemplate()">💾 Save Template</button>
+                <button class="add" onclick="addTask()">+ Add Task</button>
+            </div>
+        </header>
+
+        <section class="stats">
+            <div class="green">Task Done <span id="doneCount">0</span></div>
+            <div class="orange">Pending <span id="pendingCount">0</span></div>
+            <div class="red">Overdue <span id="overdueCount">0</span></div>
+        </section>
+
+        <section class="tasks">
+            <h2 class="section-title">My Tasks</h2>
+
+            <div id="todayTasks"></div>
+
+        </section>
+
+        <section class="activity">
+            <h2 class="section-title">Activity Feed</h2>
+            <div id="activityFeed" class="activity-feed"></div>
+        </section>
+
+
+        <section class="taskcompleted">
+            <h2 class="section-title">Completed</h2>
+
+            <div id="completedTasks"></div>
+        </section>
+
+    </main>
+</div>
+
+<div class="modal hidden" id="shareModal">
+    <div class="modal-box">
+        <h3>Share Task</h3>
+
+        <input id="shareEmail" type="email" placeholder="User email">
+        
+        <select id="sharePermission">
+            <option value="viewer">Viewer</option>
+            <option value="editor">Editor</option>
+        </select>
+
+        <div class="modal-actions">
+            <button onclick="closeShareModal()">Cancel</button>
+            <button class="primary" onclick="shareTask()">Share</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function goAdmin() {
+        window.location.href = "/admin";
+    }
+</script>
+
+<script src="/static/script.js"></script>
+<script src="/static/activity.js"></script>
+
+</body>
+</html>
