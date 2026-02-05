@@ -1,0 +1,643 @@
+* {
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.app {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    background: white;
+    padding: 20px;
+    width: 240px;
+}
+
+.sidebar a {
+    color: black;
+    text-decoration: none;
+    display: block;
+    padding: 8px 0;
+}
+
+.user {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.image {
+    width: 120px;
+}
+
+.logout {
+    background-color: rgb(157, 18, 18);
+    color: white;
+    padding: 10px 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    margin-top: 8px;
+    width: 100%;
+    display: block;
+}
+
+.content {
+    background-color: rgb(224, 229, 246);
+    flex: 1;
+    overflow: auto;
+}
+
+.top {
+    color: rgb(63, 63, 181);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    gap: 12px;
+}
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+}
+
+.header-actions input,
+.header-actions select,
+.header-actions button {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    height: 55px;
+}
+
+.add {
+    background-color: rgb(63, 63, 181);
+    color: white;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+    padding: 20px;
+}
+
+.green, .orange, .red {
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.green { background-color: rgb(51, 159, 123); }
+.orange { background-color: rgb(190, 116, 25); }
+.red { background-color: rgb(157, 18, 18); }
+
+.tasks, .taskcompleted {
+    padding: 25px;
+}
+
+.task {
+    display: grid;
+    grid-template-columns: 30px 1fr 120px 90px 90px 36px 36px 36px;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.task .title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.high {
+    background-color: rgb(157, 18, 18);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 999px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.medium {
+    background-color: rgb(190, 116, 25);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 999px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.low {
+    background-color: rgb(51, 159, 123);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 999px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.edit,
+.delete,
+.share {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.task input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.auth-body {
+    background: rgb(224, 229, 246);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-card {
+    background: white;
+    width: 380px;
+    padding: 35px;
+    border-radius: 14px;
+}
+
+.auth-card h1 {
+    text-align: center;
+    color: rgb(63, 63, 181);
+}
+
+.auth-subtitle {
+    text-align: center;
+    margin: 8px 0 25px;
+    color: #555;
+}
+
+.field {
+    margin-bottom: 15px;
+}
+
+.field input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.auth-card button {
+    width: 100%;
+    padding: 12px;
+    background-color: rgb(63, 63, 181);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 14px;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-box {
+    background: white;
+    padding: 25px;
+    width: 320px;
+    border-radius: 12px;
+}
+
+.modal-box input,
+.modal-box select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-box h3 {
+    margin-bottom: 18px;
+    color: rgb(63, 63, 181);
+    text-align: center;
+}
+
+.modal-actions button {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.modal-actions .primary {
+    background: rgb(63, 63, 181);
+    color: white;
+}
+
+.perm {
+    text-align: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.perm.owner { background: rgb(63, 63, 181); color: white; }
+.perm.editor { background: rgb(190, 116, 25); color: white; }
+.perm.viewer { background: #777; color: white; }
+
+.admin-btn {
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px 12px;
+    background: #2d2dbf;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+.badge.admin {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: #2d2dbf;
+    color: white;
+    font-size: 12px;
+    border-radius: 6px;
+    width: 100%;
+    text-align: center;
+}
+
+.admin-grid {
+    padding: 20px;
+    display: grid;
+    gap: 12px;
+}
+
+.admin-card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 5px solid #3f3fb5;
+}
+
+.admin-filters {
+    display: flex;
+    gap: 10px;
+    padding: 15px;
+}
+.admin-filters button {
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 8px;
+    border: none;
+    background: rgb(63, 63, 181);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.admin-filters button:hover {
+    background: #2d2dbf;
+}
+
+.admin-filters input,
+.admin-filters select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+button.danger {
+    background: #9d1212;
+    color: white;
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.shared-section {
+    margin-top: 8px;
+}
+
+.badge.shared {
+    display: inline-block;
+    background: #be7419;
+    color: white;
+    padding: 4px 8px;
+    margin: 2px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.badge.owner {
+    background: #339f7b;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.sidebar nav button,
+.sidebar nav a {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 8px;
+    border-radius: 6px;
+    background: #f2f4ff;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 500;
+}
+
+.sidebar nav button:hover,
+.sidebar nav a:hover {
+    background: #e0e5f6;
+}
+
+.task.overdue {
+    border-left: 5px solid #e53935;
+    background: #fff5f5;
+}
+
+.due-date {
+    font-size: 12px;
+    color: #475569;
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.due-date.late {
+    background: #fee2e2;
+    color: #991b1b;
+    font-weight: 600;
+}
+.activity{
+    padding: 25px;
+}
+
+.activity-feed {
+    /* margin: 25px; */
+    background: white;
+    border-radius: 14px;
+    /* padding: 20px 22px; */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    position: relative;
+}
+
+.activity-feed p {
+    background: #f8fafc;
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin: 12px 0;
+    font-size: 13px;
+    
+}
+
+.activity-feed .role {
+    color: #3f3fb5;
+
+}
+
+.audit-title {
+    color: rgb(63, 63, 181);
+    margin-bottom: 16px;
+}
+
+
+.audit-container {
+    
+    padding: 16px;
+
+}
+.audit-filters {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.audit-filters input,
+.audit-filters select {
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid #c7cbe3;
+    outline: none;
+}
+
+.audit-filters button {
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 8px;
+    border: none;
+    background: rgb(63, 63, 181);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.audit-filters button:hover {
+    background: #2d2dbf;
+}
+
+.audit-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px; /* GAP between rows */
+}
+
+/* HEADER */
+.audit-table th {
+    background: rgb(63, 63, 181);
+    color: white;
+    font-weight: 600;
+    padding: 14px 16px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* ===== CARD ROW ===== */
+.audit-table tbody tr {
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-radius: 12px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.audit-table tbody tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(63,63,181,0.15);
+}
+
+/* CELLS */
+.audit-table td {
+    padding: 16px;
+    font-size: 14px;
+    color: #111827;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* ROUND CORNERS PER ROW */
+.audit-table tbody tr td:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.audit-table tbody tr td:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+.audit-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+/* COLORS */
+.audit-create {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.audit-update {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.audit-delete {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.audit-share {
+    background: #fff7ed;
+    color: #9a3412;
+}
+
+.audit-role {
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.audit-role.admin {
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.audit-role.user {
+    background: #dcfce7;
+    color: #166534;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.audit-role.system {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.overdue-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #9d1212;
+    color: white;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    z-index: 1000;
+    animation: slideIn 0.4s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.overdue-toast.hidden {
+    display: none;
+}
+.section-title {
+    color: rgb(63, 63, 181);    
+          
+    margin-bottom: 14px;       
+
+}
